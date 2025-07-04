@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold text-primary">Welcome to ParkEase</h1>
+            <p class="lead">Your premier vehicle parking management solution. Find, book, and manage parking spots with ease.</p>
+            <div class="mt-4">
+                {% if not session.user_id and not session.admin_logged_in %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                {% elif session.admin_logged_in %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-tachometer-alt"></i> Go to Admin Dashboard
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user"></i> Go to Dashboard
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="text-center">
+                <i class="fas fa-car parking-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card feature-card">
+            <div class="card-body text-center">
+                <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Find Parking</h5>
+                <p class="card-text">Easily find available parking spots in your desired location.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card feature-card">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Book Instantly</h5>
+                <p class="card-text">Reserve your parking spot with just a few clicks.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card feature-card">
+            <div class="card-body text-center">
+                <i class="fas fa-mobile-alt fa-3x text-info mb-3"></i>
+                <h5 class="card-title">Manage Easily</h5>
+                <p class="card-text">Track your reservations and manage your parking history.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Available Parking Locations</h5>
+            </div>
+            <div class="card-body">
+                <div id="parking-lots-container">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadParkingLots();
+});
+
+function loadParkingLots() {
+    fetch('/api/parkinglots')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('parking-lots-container');
+            if (data.length === 0) {
+                container.innerHTML = '<p class="text-muted">No parking lots available at the moment.</p>';
+                return;
+            }
+            
+            let html = '<div class="row">';
+            data.forEach(lot => {
+                const availabilityClass = lot.available_spots > 0 ? 'text-success' : 'text-danger';
+                const availabilityText = lot.available_spots > 0 ? 'Available' : 'Full';
+                
+                html += `
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">${lot.name}</h6>
+                                <p class="card-text small text-muted mb-2">${lot.address}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary">$${lot.price}/hour</span>
+                                    <span class="${availabilityClass}">
+                                        <i class="fas fa-circle"></i> ${availabilityText}
+                                    </span>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">${lot.available_spots}/${lot.total_spots} spots available</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error loading parking lots:', error);
+            document.getElementById('parking-lots-container').innerHTML = 
+                '<p class="text-danger">Error loading parking lots. Please try again later.</p>';
+        });
+}
+</script>
+{% endblock %}

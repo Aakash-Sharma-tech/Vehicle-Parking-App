@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}My Reservations - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-history"></i> My Reservations</h2>
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+{% if reservations %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Parking Lot</th>
+                    <th>Spot</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                    <th>Rate</th>
+                    <th>Total Cost</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                <tr>
+                    <td>
+                        <strong>{{ reservation.lot_name }}</strong>
+                        <br>
+                        <small class="text-muted">{{ reservation.address }}</small>
+                    </td>
+                    <td>{{ reservation.spot_number }}</td>
+                    <td>{{ reservation.parking_timestamp[:16] }}</td>
+                    <td>
+                        {% if reservation.leaving_timestamp %}
+                            {{ reservation.leaving_timestamp[:16] }}
+                        {% else %}
+                            <em class="text-muted">Active</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if reservation.leaving_timestamp %}
+                            {% set start_time = reservation.parking_timestamp %}
+                            {% set end_time = reservation.leaving_timestamp %}
+                            <!-- Duration calculation would be done in Python -->
+                            -
+                        {% else %}
+                            <em class="text-muted">Ongoing</em>
+                        {% endif %}
+                    </td>
+                    <td>${{ "%.2f"|format(reservation.cost_per_hour) }}/hr</td>
+                    <td>
+                        {% if reservation.total_cost %}
+                            <strong>${{ "%.2f"|format(reservation.total_cost) }}</strong>
+                        {% else %}
+                            <em class="text-muted">TBD</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if reservation.status == 'active' %}
+                            <span class="badge bg-success">Active</span>
+                        {% elif reservation.status == 'completed' %}
+                            <span class="badge bg-info">Completed</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ reservation.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if reservation.status == 'active' %}
+                            <form method="POST" action="{{ url_for('user.release_parking', reservation_id=reservation.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to release this parking spot?')">
+                                    <i class="fas fa-sign-out-alt"></i> Release
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Total Reservations</h5>
+                    <h3 class="text-primary">{{ reservations|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Total Spent</h5>
+                    <h3 class="text-success">
+                        ${{ "%.2f"|format(reservations|selectattr('total_cost')|map(attribute='total_cost')|sum) }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="text-center">
+        <i class="fas fa-history fa-4x text-muted mb-3"></i>
+        <h4>No Reservations</h4>
+        <p class="text-muted">You haven't made any reservations yet.</p>
+        <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Book Your First Spot
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

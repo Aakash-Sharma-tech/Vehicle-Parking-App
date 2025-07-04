@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2><i class="fas fa-user"></i> Welcome, {{ session.username }}!</h2>
+        
+        {% if active_reservation %}
+            <div class="alert alert-info">
+                <h5><i class="fas fa-info-circle"></i> Active Reservation</h5>
+                <p><strong>Parking Lot:</strong> {{ active_reservation.lot_name }}</p>
+                <p><strong>Spot:</strong> {{ active_reservation.spot_number }}</p>
+                <p><strong>Started:</strong> {{ active_reservation.parking_timestamp[:16] }}</p>
+                <p><strong>Rate:</strong> ${{ "%.2f"|format(active_reservation.cost_per_hour) }}/hour</p>
+                <form method="POST" action="{{ url_for('user.release_parking', reservation_id=active_reservation.id) }}" style="display: inline;">
+                    <button type="submit" class="btn btn-warning" onclick="return confirm('Are you sure you want to release this parking spot?')">
+                        <i class="fas fa-sign-out-alt"></i> Release Parking
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+        
+        <div class="card">
+            <div class="card-header">
+                <h5>Available Parking Lots</h5>
+            </div>
+            <div class="card-body">
+                {% if lots %}
+                    <div class="row">
+                        {% for lot in lots %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ lot.name }}</h6>
+                                        <p class="card-text">{{ lot.address }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="badge bg-primary">${{ "%.2f"|format(lot.price) }}/hour</span>
+                                            <span class="text-{{ 'success' if lot.available_spots > 0 else 'danger' }}">
+                                                {{ lot.available_spots }}/{{ lot.total_spots }} available
+                                            </span>
+                                        </div>
+                                        {% if lot.available_spots > 0 and not active_reservation %}
+                                            <form method="POST" action="{{ url_for('user.book_parking') }}" class="mt-2">
+                                                <input type="hidden" name="lot_id" value="{{ lot.id }}">
+                                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                                    <i class="fas fa-calendar-plus"></i> Book Now
+                                                </button>
+                                            </form>
+                                        {% elif lot.available_spots == 0 %}
+                                            <button class="btn btn-secondary btn-sm w-100 mt-2" disabled>
+                                                <i class="fas fa-ban"></i> Full
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No parking lots available at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Reservations</h5>
+            </div>
+            <div class="card-body">
+                {% if reservations %}
+                    {% for reservation in reservations[:5] %}
+                        <div class="mb-3 pb-3 border-bottom">
+                            <h6>{{ reservation.lot_name }}</h6>
+                            <p class="small mb-1">Spot: {{ reservation.spot_number }}</p>
+                            <p class="small mb-1">{{ reservation.parking_timestamp[:16] }}</p>
+                            <div class="d-flex justify-content-between">
+                                <span class="badge bg-{{ 'success' if reservation.status == 'active' else 'info' }}">
+                                    {{ reservation.status }}
+                                </span>
+                                {% if reservation.total_cost %}
+                                    <span class="small">${{ "%.2f"|format(reservation.total_cost) }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="text-center">
+                        <a href="{{ url_for('user.reservations') }}" class="btn btn-sm btn-outline-primary">
+                            View All Reservations
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No reservations yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

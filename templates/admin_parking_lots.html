@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Parking Lots - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-building"></i> Manage Parking Lots</h2>
+    <a href="{{ url_for('admin.create_lot') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Lot
+    </a>
+</div>
+
+{% if lots %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Price/Hour</th>
+                    <th>Total Spots</th>
+                    <th>Available</th>
+                    <th>Occupied</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lot in lots %}
+                <tr>
+                    <td><strong>{{ lot.name }}</strong></td>
+                    <td>{{ lot.address }}, {{ lot.pin_code }}</td>
+                    <td>${{ "%.2f"|format(lot.price) }}</td>
+                    <td>{{ lot.total_spots }}</td>
+                    <td>
+                        <span class="badge bg-success">{{ lot.available_spots }}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-warning">{{ lot.total_spots - lot.available_spots }}</span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin.edit_lot', lot_id=lot.id) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete({{ lot.id }}, '{{ lot.name }}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="text-center">
+        <i class="fas fa-building fa-4x text-muted mb-3"></i>
+        <h4>No Parking Lots</h4>
+        <p class="text-muted">Create your first parking lot to get started.</p>
+        <a href="{{ url_for('admin.create_lot') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Lot
+        </a>
+    </div>
+{% endif %}
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the parking lot "<span id="lotName"></span>"?
+                This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete(lotId, lotName) {
+    document.getElementById('lotName').textContent = lotName;
+    document.getElementById('deleteForm').action = `/admin/parking-lots/delete/${lotId}`;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}

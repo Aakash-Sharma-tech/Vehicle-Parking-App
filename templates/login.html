@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4><i class="fas fa-sign-in-alt"></i> Login</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="user_type" class="form-label">Login As</label>
+                        <select class="form-select" id="user_type" name="user_type" required>
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+                </div>
+                
+                <div class="mt-3">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">Demo Credentials</h6>
+                            <p class="card-text mb-1"><strong>Admin:</strong> admin / admin123</p>
+                            <p class="card-text mb-0"><strong>User:</strong> demo_user / password123</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
