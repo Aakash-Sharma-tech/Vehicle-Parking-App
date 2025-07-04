@@ -73,22 +73,3 @@
     </div>
 {% endif %}
 {% endblock %}
-
-{% block scripts %}
-<script>
-function filterReservations(status) {
-    const rows = document.querySelectorAll('#reservationsTable tbody tr');
-    
-    rows.forEach(row => {
-        const rowStatus = row.getAttribute('data-status');
-        if (status === 'all') {
-            row.style.display = '';
-        } else if (rowStatus === status) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-}
-</script>
-{% endblock %}

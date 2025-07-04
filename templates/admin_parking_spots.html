@@ -53,29 +53,3 @@
     </div>
 {% endif %}
 {% endblock %}
-
-{% block scripts %}
-<script>
-function filterSpots(status) {
-    const rows = document.querySelectorAll('#spotsTable tbody tr');
-    
-    rows.forEach(row => {
-        const rowStatus = row.getAttribute('data-status');
-        if (status === 'all') {
-            row.style.display = '';
-        } else if (status === 'available' && rowStatus === 'A') {
-            row.style.display = '';
-        } else if (status === 'occupied' && rowStatus === 'O') {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-}
-
-function viewSpotDetails(spotId) {
-    // This would open a modal with spot details
-    alert('Spot details functionality can be implemented here');
-}
-</script>
-{% endblock %}

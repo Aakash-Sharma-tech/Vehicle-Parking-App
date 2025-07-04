@@ -60,24 +60,3 @@
     </div>
 </div>
 {% endblock %}
-
-{% block scripts %}
-<script>
-document.getElementById('createLotForm').addEventListener('submit', function(e) {
-    const price = parseFloat(document.getElementById('price').value);
-    const maxSpots = parseInt(document.getElementById('max_spots').value);
-    
-    if (price <= 0) {
-        e.preventDefault();
-        alert('Price must be greater than 0');
-        return false;
-    }
-    
-    if (maxSpots <= 0) {
-        e.preventDefault();
-        alert('Maximum spots must be greater than 0');
-        return false;
-    }
-});
-</script>
-{% endblock %}

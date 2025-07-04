@@ -83,13 +83,3 @@
     </div>
 </div>
 {% endblock %}
-
-{% block scripts %}
-<script>
-function confirmDelete(lotId, lotName) {
-    document.getElementById('lotName').textContent = lotName;
-    document.getElementById('deleteForm').action = `/admin/parking-lots/delete/${lotId}`;
-    new bootstrap.Modal(document.getElementById('deleteModal')).show();
-}
-</script>
-{% endblock %}
