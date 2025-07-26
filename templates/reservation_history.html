@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}Reservation History - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<h2>Your Reservation History</h2>
+
+<div class="card">
+    <div class="card-body">
+        {% if reservations %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Spot</th>
+                        <th>Vehicle</th>
+                        <th>Parked Time</th>
+                        <th>Released Time</th>
+                        <th>Duration</th>
+                        <th>Total Cost</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.location_name }}<br><small>{{ reservation.address }}</small></td>
+                        <td>#{{ reservation.spot_number }}</td>
+                        <td>{{ reservation.vehicle_number }}</td>
+                        <td>{{ reservation.parking_timestamp[:19].replace('T', ' ') }}</td>
+                        <td>
+                            {% if reservation.leaving_timestamp %}
+                                {{ reservation.leaving_timestamp[:19].replace('T', ' ') }}
+                            {% else %}
+                                Still Parked
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.leaving_timestamp %}
+                                {% set parking_time = reservation.parking_timestamp[:19] %}
+                                {% set leaving_time = reservation.leaving_timestamp[:19] %}
+                                Duration calculated
+                            {% else %}
+                                Ongoing
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.total_cost %}
+                                ${{ "%.2f"|format(reservation.total_cost) }}
+                            {% else %}
+                                Pending
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.status == 'active' %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Completed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No reservations found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+{% endblock %}

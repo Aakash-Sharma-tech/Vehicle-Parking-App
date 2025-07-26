@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}User Dashboard - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<h2>Your Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Your Active Reservations</h4>
+            </div>
+            <div class="card-body">
+                {% if active_reservations %}
+                    {% for reservation in active_reservations %}
+                    <div class="reservation-card mb-3">
+                        <h5>{{ reservation.location_name }}</h5>
+                        <p><strong>Address:</strong> {{ reservation.address }}</p>
+                        <p><strong>Spot:</strong> #{{ reservation.spot_number }}</p>
+                        <p><strong>Vehicle:</strong> {{ reservation.vehicle_number }}</p>
+                        <p><strong>Parked Since:</strong> {{ reservation.parking_timestamp[:19].replace('T', ' ') }}</p>
+                        <p><strong>Rate:</strong> ${{ reservation.cost_per_hour }}/hour</p>
+                        <a href="{{ url_for('user.release_spot', reservation_id=reservation.id) }}" 
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Are you sure you want to release this spot?')">
+                           Release Spot
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No active reservations.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Available Parking Lots</h4>
+            </div>
+            <div class="card-body">
+                {% if lots %}
+                    {% for lot in lots %}
+                    <div class="lot-card mb-3">
+                        <h5>{{ lot.location_name }}</h5>
+                        <p><strong>Address:</strong> {{ lot.address }}, {{ lot.pin_code }}</p>
+                        <p><strong>Price:</strong> ${{ lot.price }}/hour</p>
+                        <p>
+                            <span class="badge bg-success">{{ lot.available_spots }} Available</span>
+                            <span class="badge bg-danger">{{ lot.occupied_spots }} Occupied</span>
+                        </p>
+                        
+                        {% if lot.available_spots > 0 %}
+                        <form method="POST" action="{{ url_for('user.book_spot', lot_id=lot.id) }}" class="d-inline">
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" name="vehicle_number" 
+                                       placeholder="Vehicle Number" required>
+                                <button type="submit" class="btn btn-primary">Book Spot</button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <button class="btn btn-secondary" disabled>No Available Spots</button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No parking lots available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

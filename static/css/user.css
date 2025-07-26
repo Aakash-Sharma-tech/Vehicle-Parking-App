@@ -1,0 +1,166 @@
+/* User-specific styles */
+.reservation-card {
+    background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.reservation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.reservation-card h5 {
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.reservation-card p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.reservation-card strong {
+    color: var(--dark-color);
+}
+
+.lot-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.lot-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-color: var(--info-color);
+}
+
+.lot-card h5 {
+    color: var(--info-color);
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.lot-card p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.lot-card .badge {
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Booking form styling */
+.input-group {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.input-group .form-control {
+    border: none;
+    border-radius: 0;
+}
+
+.input-group .btn {
+    border-radius: 0;
+    border: none;
+}
+
+/* Dashboard layout */
+.user-dashboard {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-radius: 10px;
+}
+
+/* History table styling */
+.reservation-history .table {
+    background: white;
+    margin: 0;
+}
+
+.reservation-history .table td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.reservation-history .table small {
+    color: var(--secondary-color);
+    font-size: 0.8rem;
+}
+
+/* Status badges in history */
+.badge.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.badge.bg-secondary {
+    background-color: var(--secondary-color) !important;
+}
+
+/* Empty state styling */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--secondary-color);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .reservation-card, .lot-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group .form-control {
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+    }
+    
+    .input-group .btn {
+        border-radius: 6px;
+    }
+    
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    .reservation-card h5,
+    .lot-card h5 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card {
+        margin: 0 -5px 1rem -5px;
+    }
+    
+    .reservation-card,
+    .lot-card {
+        margin: 0 0 1rem 0;
+        padding: 1rem;
+    }
+}

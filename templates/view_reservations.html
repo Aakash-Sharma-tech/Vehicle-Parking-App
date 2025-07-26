@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block title %}All Reservations - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<h2>All Reservations</h2>
+
+<div class="card">
+    <div class="card-body">
+        {% if reservations %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Location</th>
+                        <th>Spot</th>
+                        <th>Vehicle</th>
+                        <th>Parked Time</th>
+                        <th>Released Time</th>
+                        <th>Total Cost</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.id }}</td>
+                        <td>{{ reservation.user_name }}<br><small>{{ reservation.user_email }}</small></td>
+                        <td>{{ reservation.location_name }}</td>
+                        <td>#{{ reservation.spot_number }}</td>
+                        <td>{{ reservation.vehicle_number }}</td>
+                        <td>{{ reservation.parking_timestamp[:19].replace('T', ' ') }}</td>
+                        <td>
+                            {% if reservation.leaving_timestamp %}
+                                {{ reservation.leaving_timestamp[:19].replace('T', ' ') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.total_cost %}
+                                ${{ "%.2f"|format(reservation.total_cost) }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reservation.status == 'active' %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Completed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No reservations found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

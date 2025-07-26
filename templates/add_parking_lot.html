@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}{% if edit_mode %}Edit{% else %}Add{% endif %} Parking Lot - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>{% if edit_mode %}Edit{% else %}Add New{% endif %} Parking Lot</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="location_name" class="form-label">Location Name</label>
+                                <input type="text" class="form-control" id="location_name" name="location_name" 
+                                       value="{% if lot %}{{ lot.location_name }}{% endif %}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Price per Hour ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" 
+                                       value="{% if lot %}{{ lot.price }}{% endif %}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" required>{% if lot %}{{ lot.address }}{% endif %}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="pin_code" class="form-label">PIN Code</label>
+                                <input type="text" class="form-control" id="pin_code" name="pin_code" 
+                                       value="{% if lot %}{{ lot.pin_code }}{% endif %}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="max_spots" class="form-label">Maximum Spots</label>
+                                <input type="number" class="form-control" id="max_spots" name="max_spots" min="1" 
+                                       value="{% if lot %}{{ lot.max_spots }}{% endif %}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            {% if edit_mode %}Update{% else %}Create{% endif %} Parking Lot
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
