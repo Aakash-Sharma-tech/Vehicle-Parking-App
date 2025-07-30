@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Parking History - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-history me-2"></i>Your Parking History</h2>
+        <a href="{{ url_for('user.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h4>{{ reservations|length }}</h4>
+                    <p class="mb-0">Total Bookings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h4>{{ reservations|rejectattr('is_active')|list|length }}</h4>
+                    <p class="mb-0">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-warning text-white">
+                <div class="card-body">
+                    <h4>{{ reservations|selectattr('is_active')|list|length }}</h4>
+                    <p class="mb-0">Active Now</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-info text-white">
+                <div class="card-body">
+                    <h4>₹{{ reservations|selectattr('total_cost')|map(attribute='total_cost')|sum|round(2) }}</h4>
+                    <p class="mb-0">Total Spent</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line me-2"></i>Your Monthly Spending</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="userSpendingChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if reservations %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Parking Lot</th>
+                                <th>Spot</th>
+                                <th>Vehicle</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Duration</th>
+                                <th>Cost</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in reservations %}
+                            <tr>
+                                <td>{{ reservation.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ reservation.parking_spot.parking_lot.name }}</td>
+                                <td><span class="badge bg-primary">{{ reservation.parking_spot.spot_number }}</span></td>
+                                <td><span class="badge bg-secondary">{{ reservation.vehicle_number }}</span></td>
+                                <td>{{ reservation.check_in_time.strftime('%H:%M') }}</td>
+                                <td>
+                                    {% if reservation.check_out_time %}
+                                        {{ reservation.check_out_time.strftime('%H:%M') }}
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ reservation.get_duration() }}</td>
+                                <td>
+                                    {% if reservation.total_cost %}
+                                        <strong>₹{{ "%.2f"|format(reservation.total_cost) }}</strong>
+                                    {% else %}
+                                        <span class="text-muted">Ongoing</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if reservation.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Completed</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if reservation.is_active %}
+                                        <a href="{{ url_for('user.release_parking', reservation_id=reservation.id) }}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Are you sure you want to release this parking spot?')">
+                                            <i class="fas fa-sign-out-alt"></i> Release
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-sm btn-outline-info disabled">
+                                            <i class="fas"></i> Released
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-history text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">No Parking History</h4>
+                    <p class="text-muted">You haven't made any parking reservations yet.</p>
+                    <a href="{{ url_for('user.book_parking') }}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Book Your First Parking Spot
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

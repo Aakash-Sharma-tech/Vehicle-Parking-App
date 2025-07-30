@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}View Spots - {{ lot.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-parking me-2"></i>{{ lot.name }} - Parking Spots</h2>
+            <p class="text-muted mb-0">{{ lot.address }} | ₹{{ lot.price_per_hour }}/hour</p>
+        </div>
+        <a href="{{ url_for('admin.parking_lots') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Parking Lots
+        </a>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4" style="justify-content: center;">
+        <div class="col-md-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <h4>{{ lot.max_spots }}</h4>
+                    <p class="mb-0">Total Spots</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <h4>{{ lot.get_available_spots_count() }}</h4>
+                    <p class="mb-0">Available</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-danger text-white">
+                <div class="card-body">
+                    <h4>{{ lot.get_occupied_spots_count() }}</h4>
+                    <p class="mb-0">Occupied</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Parking Spots Grid -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="fas fa-th me-2"></i>Parking Spots Layout</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                {% for spot in spots %}
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                    <div class="border p-2 text-center rounded 
+                                {% if spot.is_available %}border-success{% else %}border-danger{% endif %}">
+                        <div class="fw-bold">{{ spot.spot_number }}</div>
+                        <div class="small text-muted mb-2">
+                            {% if spot.is_available %}
+                                <i class="fas fa-check-circle text-success"></i> Available
+                            {% else %}
+                                <i class="fas fa-car text-danger"></i> Occupied
+                            {% endif %}
+                        </div>
+                        {% if not spot.is_available %}
+                            {% set reservation = spot.get_current_reservation() %}
+                            {% if reservation %}
+                                <div class="small">
+                                    <strong>{{ reservation.vehicle_number }}</strong><br>
+                                    {{ reservation.user.full_name }}<br>
+                                    {{ reservation.get_duration() }}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Table View -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="fas fa-table me-2"></i>Detailed Spot Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Spot Number</th>
+                            <th>Status</th>
+                            <th>Vehicle Number</th>
+                            <th>User</th>
+                            <th>Check-in Time</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for spot in spots %}
+                        <tr>
+                            <td><span class="badge bg-primary">{{ spot.spot_number }}</span></td>
+                            <td>
+                                {% if spot.is_available %}
+                                    <span class="badge bg-success">Available</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Occupied</span>
+                                {% endif %}
+                            </td>
+                            {% if not spot.is_available %}
+                                {% set reservation = spot.get_current_reservation() %}
+                                {% if reservation %}
+                                    <td><span class="badge bg-secondary">{{ reservation.vehicle_number }}</span></td>
+                                    <td>{{ reservation.user.full_name }}</td>
+                                    <td>{{ reservation.check_in_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>{{ reservation.get_duration() }}</td>
+                                {% else %}
+                                    <td colspan="4" class="text-muted">No active reservation</td>
+                                    <td>-</td>
+                                {% endif %}
+                            {% else %}
+                                <td colspan="4" class="text-muted">-</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

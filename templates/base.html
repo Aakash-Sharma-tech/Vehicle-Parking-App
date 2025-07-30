@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Vehicle Parking App - V1{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block additional_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-car" style="margin-right: 0.5rem;"></i>Vehicle Parking App
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav" style="margin-left: auto;">
+                    {% if session.user_id %}
+                        {% if session.is_admin %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt" style="margin-right: 0.25rem;"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.parking_lots') }}">
+                                    <i class="fas fa-parking" style="margin-right: 0.25rem;"></i>Parking Lots
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.users') }}">
+                                    <i class="fas fa-users" style="margin-right: 0.25rem;"></i>Users
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('admin.reports') }}">
+                                    <i class="fas fa-chart-bar" style="margin-right: 0.25rem;"></i>Reports
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('user.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt" style="margin-right: 0.25rem;"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('user.book_parking') }}">
+                                    <i class="fas fa-plus-circle" style="margin-right: 0.25rem;"></i>Book Parking
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('user.history') }}">
+                                    <i class="fas fa-history" style="margin-right: 0.25rem;"></i>History
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user" style="margin-right: 0.25rem;"></i>{{ session.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <i class="fas fa-sign-out-alt" style="margin-right: 0.25rem;"></i>Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt" style="margin-right: 0.25rem;"></i>Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.register') }}">
+                                <i class="fas fa-user-plus" style="margin-right: 0.25rem;"></i>Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container" style="margin-top: 1rem;">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' 
+                                      else 'check-circle' if category == 'success' 
+                                      else 'info-circle' }}" style="margin-right: 0.5rem;"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: auto;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-car" style="margin-right: 0.5rem;"></i>Vehicle Parking App - V1</h5>
+                    <p>Efficient parking management solution for modern cities.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Features</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check" style="margin-right: 0.25rem;"></i>Real-time Availability</li>
+                        <li><i class="fas fa-check" style="margin-right: 0.25rem;"></i>Online Booking</li>
+                        <li><i class="fas fa-check" style="margin-right: 0.25rem;"></i>Payment Tracking</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contact</h5>
+                    <p><i class="fas fa-envelope" style="margin-right: 0.25rem;"></i>24f2003480@ds.study.iitm.ac.in</p>                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 Vehicle Parking App. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    
+    {% block additional_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Book Spot - {{ lot.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-car me-2"></i>Book Parking Spot</h2>
+            <p class="text-muted mb-0">{{ lot.name }} - {{ available_count }} spots available</p>
+        </div>
+        <a href="{{ url_for('user.book_parking') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Parking Lots
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Parking Lot Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-info-circle me-2"></i>Parking Lot Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Name:</strong> {{ lot.name }}</p>
+                            <p><strong>Address:</strong> {{ lot.address }}</p>
+                            <p><strong>Pincode:</strong> {{ lot.pincode }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Price:</strong> <span class="badge bg-success">₹{{ lot.price_per_hour }}/hour</span></p>
+                            <p><strong>Available Spots:</strong> <span class="badge bg-info">{{ available_count }}</span></p>
+                            <p><strong>Total Spots:</strong> {{ lot.max_spots }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if available_count > 0 %}
+            <!-- Booking Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-plus-circle me-2"></i>Complete Your Booking</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="bookingForm">
+                        <div class="mb-4">
+                            <label for="vehicle_number" class="form-label">Vehicle Number:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-car"></i></span>
+                                <input type="text" class="form-control" name="vehicle_number" id="vehicle_number" 
+                                       placeholder="Enter your vehicle number (e.g., MH12AB1234)" required 
+                                       pattern="[A-Za-z0-9]+" maxlength="15" style="text-transform: uppercase;">
+                            </div>
+                            <div class="form-text">Enter your vehicle registration number without spaces</div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-1"></i>Booking Information:</h6>
+                            <ul class="mb-0">
+                                <li>The first available parking spot will be automatically assigned to you</li>
+                                <li>Billing starts immediately upon booking confirmation</li>
+                                <li>You can release the spot anytime from your dashboard</li>
+                                <li>Minimum billing: 1 hour</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check-circle me-2"></i>Confirm Booking
+                            </button>
+                            <a href="{{ url_for('user.book_parking') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Pricing Information -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-rupee-sign me-2"></i>Pricing Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h5>₹{{ lot.price_per_hour }}</h5>
+                            <small class="text-muted">Per Hour</small>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>₹{{ lot.price_per_hour * 24 }}</h5>
+                            <small class="text-muted">Per Day (24 hrs)</small>
+                        </div>
+                        <div class="col-md-4">
+                            <h5>₹{{ lot.price_per_hour * 24 * 7 }}</h5>
+                            <small class="text-muted">Per Week (7 days)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- No spots available -->
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-times-circle text-danger" style="font-size: 4rem;"></i>
+                    <h4 class="text-danger mt-3">No Spots Available</h4>
+                    <p class="text-muted">All parking spots in this lot are currently occupied. Please try another parking lot or check back later.</p>
+                    <a href="{{ url_for('user.book_parking') }}" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Find Other Parking Lots
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

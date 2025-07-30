@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Parking Lots - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-parking me-2"></i>Parking Lots Management</h2>
+        <a href="{{ url_for('admin.add_parking_lot') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Parking Lot
+        </a>
+    </div>
+
+    <!-- Parking Lots Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if lots %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Pincode</th>
+                                <th>Price/Hour</th>
+                                <th>Total Spots</th>
+                                <th>Available</th>
+                                <th>Occupied</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lot in lots %}
+                            <tr>
+                                <td>{{ lot.id }}</td>
+                                <td><strong>{{ lot.name }}</strong></td>
+                                <td>{{ lot.address[:50] }}{% if lot.address|length > 50 %}...{% endif %}</td>
+                                <td>{{ lot.pincode }}</td>
+                                <td><span class="badge bg-success">₹{{ lot.price_per_hour }}/hr</span></td>
+                                <td>{{ lot.max_spots }}</td>
+                                <td><span class="badge bg-success">{{ lot.get_available_spots_count() }}</span></td>
+                                <td><span class="badge bg-danger">{{ lot.get_occupied_spots_count() }}</span></td>
+                                <td>
+                                    {% if lot.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('admin.view_spots', lot_id=lot.id) }}" 
+                                           class="btn btn-sm btn-info" title="View Spots">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin.edit_parking_lot', lot_id=lot.id) }}" 
+                                           class="btn btn-sm btn-warning" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin.delete_parking_lot', lot_id=lot.id) }}" 
+                                           class="btn btn-sm btn-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-parking text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">No Parking Lots Found</h4>
+                    <p class="text-muted">Start by adding your first parking lot to manage spots.</p>
+                    <a href="{{ url_for('admin.add_parking_lot') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Parking Lot
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    {% if lots %}
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-primary">{{ lots|length }}</h4>
+                    <p class="mb-0">Total Lots</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-success">{{ lots|sum(attribute='max_spots') }}</h4>
+                    <p class="mb-0">Total Spots</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-info">{{ available }}</h4>
+                    <p class="mb-0">Available Now</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="text-warning">{{ occupied }}</h4>
+                    <p class="mb-0">Currently Occupied</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Parking Lot - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-edit me-2"></i>Edit Parking Lot</h2>
+        <a href="{{ url_for('admin.parking_lots') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Parking Lots
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-parking me-2"></i>Update Parking Lot Details</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="editLotForm">
+                        <!-- Name -->
+                        <div class="form-group mb-3">
+                            <label for="name" class="form-label">Parking Lot Name:</label>
+                            <input type="text" class="form-control" name="name" id="name" 
+                                   value="{{ lot.name }}" required>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="form-group mb-3">
+                            <label for="address" class="form-label">Address:</label>
+                            <textarea class="form-control" name="address" id="address" rows="3" required>{{ lot.address }}</textarea>
+                        </div>
+
+                        <!-- Pincode -->
+                        <div class="form-group mb-3">
+                            <label for="pincode" class="form-label">Pincode:</label>
+                            <input type="text" class="form-control" name="pincode" id="pincode" 
+                                   value="{{ lot.pincode }}" required pattern="[0-9]{6}" maxlength="6">
+                            <div class="form-text">Enter 6-digit pincode</div>
+                        </div>
+
+                        <!-- Price per Hour -->
+                        <div class="form-group mb-4">
+                            <label for="price_per_hour" class="form-label">Price per Hour (₹):</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" class="form-control" name="price_per_hour" id="price_per_hour" 
+                                       value="{{ lot.price_per_hour }}" required min="1" step="0.01">
+                            </div>
+                        </div>
+
+                        <!-- Current Spots Info -->
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-1"></i>Current Parking Spots Information:</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <strong>Total Spots:</strong> {{ lot.max_spots }}
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Available:</strong> {{ lot.get_available_spots_count() }}
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Occupied:</strong> {{ lot.get_occupied_spots_count() }}
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                Note: You cannot change the number of spots after creation to maintain data integrity.
+                            </small>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Update Parking Lot
+                            </button>
+                            <a href="{{ url_for('admin.parking_lots') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('admin.view_spots', lot_id=lot.id) }}" class="btn btn-info w-100">
+                                <i class="fas fa-eye me-2"></i>View All Spots
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-warning w-100" disabled title="JS removed; toggle disabled">
+                                <i class="fas fa-toggle-{{ 'on' if lot.is_active else 'off' }} me-2"></i>
+                                {{ 'Deactivate' if lot.is_active else 'Activate' }} Lot
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('admin.delete_parking_lot', lot_id=lot.id) }}"
+                               class="btn btn-danger w-100">
+                                <i class="fas fa-trash me-2"></i>Delete Lot
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

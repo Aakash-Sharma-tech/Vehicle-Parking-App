@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</h2>
+        <div class="text-muted">
+            <i class="fas fa-calendar me-1"></i>
+            <span id="currentDate"></span>
+        </div>
+    </div>
+
+    <!-- Revenue Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white">
+                <div class="card-body">
+                    <i class="fas fa-rupee-sign" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2">₹{{ "%.2f"|format(total_revenue) }}</h4>
+                    <p class="mb-0">Total Revenue</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-primary text-white">
+                <div class="card-body">
+                    <i class="fas fa-ticket-alt" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2">{{ completed_reservations|length }}</h4>
+                    <p class="mb-0">Completed Bookings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-info text-white">
+                <div class="card-body">
+                    <i class="fas fa-parking" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2">{{ lots|length }}</h4>
+                    <p class="mb-0">Total Parking Lots</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-warning text-white">
+                <div class="card-body">
+                    <i class="fas fa-car" style="font-size: 2rem;"></i>
+                    <h4 class="mt-2">{{ lots|sum(attribute='max_spots') }}</h4>
+                    <p class="mb-0">Total Parking Spots</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4" style="justify-content: center;">
+        <!-- Parking Lots Occupancy Chart -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Parking Lots Occupancy Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="parkingLotsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- Recent Transactions -->
+    <div class="row mb-4 mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-history me-2"></i>Recent Completed Bookings</h5>
+                </div>
+                <div class="card-body">
+                    {% if completed_reservations %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>User</th>
+                                        <th>Vehicle</th>
+                                        <th>Parking Lot</th>
+                                        <th>Spot</th>
+                                        <th>Duration</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for reservation in completed_reservations %}
+                                    <tr>
+                                        <td>{{ reservation.check_out_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>{{ reservation.user.full_name }}</td>
+                                        <td><span class="badge bg-secondary">{{ reservation.vehicle_number }}</span></td>
+                                        <td>{{ reservation.parking_spot.parking_lot.name }}</td>
+                                        <td><span class="badge bg-primary">{{ reservation.parking_spot.spot_number }}</span></td>
+                                        <td>{{ reservation.get_duration() }}</td>
+                                        <td><strong>₹{{ "%.2f"|format(reservation.total_cost or 0) }}</strong></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-chart-line text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="text-muted mt-3">No completed bookings yet</h5>
+                            <p class="text-muted">Revenue data will appear here once users complete their parking sessions.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

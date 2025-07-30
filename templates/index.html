@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <h1><i class="fas fa-car me-3"></i>Vehicle Parking App</h1>
+                <p class="lead">Find, book, and manage parking spots with ease. Your smart parking solution for urban mobility.</p>
+                <div class="mt-4">
+                    {% if not session.user_id %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg me-3">
+                            <i class="fas fa-user-plus me-2"></i>Get Started
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('admin.dashboard' if session.is_admin else 'user.dashboard') }}" 
+                           class="btn btn-light btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2>Why Choose Our Parking App?</h2>
+                <p class="lead text-muted">Experience the future of parking management</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-clock text-primary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title">Real-Time Availability</h5>
+                        <p class="card-text">Check parking spot availability in real-time and book instantly.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-mobile-alt text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title">Easy Booking</h5>
+                        <p class="card-text">Book parking spots with just a few clicks from anywhere.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-chart-line text-info" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title">Smart Analytics</h5>
+                        <p class="card-text">Track your parking history and expenses with detailed analytics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="dashboard-card primary">
+                    <i class="fas fa-parking icon text-primary"></i>
+                    <h3>50+</h3>
+                    <p>Parking Lots</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="dashboard-card success">
+                    <i class="fas fa-users icon text-success"></i>
+                    <h3>1000+</h3>
+                    <p>Happy Users</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="dashboard-card warning">
+                    <i class="fas fa-car icon text-warning"></i>
+                    <h3>5000+</h3>
+                    <p>Parking Spots</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="dashboard-card info">
+                    <i class="fas fa-clock icon text-info"></i>
+                    <h3>24/7</h3>
+                    <p>Service Available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How it Works Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2>How It Works</h2>
+                <p class="lead text-muted">Simple steps to get your parking spot</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 text-center mb-4">
+                <div class="mb-3">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px; font-size: 2rem;">
+                        1
+                    </div>
+                </div>
+                <h5>Register</h5>
+                <p>Create your account to get started</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="mb-3">
+                    <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px; font-size: 2rem;">
+                        2
+                    </div>
+                </div>
+                <h5>Find</h5>
+                <p>Search for available parking spots</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="mb-3">
+                    <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px; font-size: 2rem;">
+                        3
+                    </div>
+                </div>
+                <h5>Book</h5>
+                <p>Reserve your spot instantly</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="mb-3">
+                    <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px; font-size: 2rem;">
+                        4
+                    </div>
+                </div>
+                <h5>Park</h5>
+                <p>Enjoy hassle-free parking</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
