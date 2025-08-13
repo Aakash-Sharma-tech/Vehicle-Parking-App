@@ -50,6 +50,16 @@
                                        value="{{ lot.price_per_hour }}" required min="1" step="0.01">
                             </div>
                         </div>
+                        
+                        <!-- Total Spots -->
+                        <div class="form-group mb-4">
+                            <label for="max_spots" class="form-label">Total Parking Spots:</label>
+                            <input type="number" class="form-control" name="max_spots" id="max_spots" 
+                                value="{{ lot.max_spots }}" required min="1">
+                            <div class="form-text">
+                                Changing this will add/remove spots automatically.
+                            </div>
+                        </div>
 
                         <!-- Current Spots Info -->
                         <div class="alert alert-info">
@@ -89,17 +99,11 @@
                     <h6><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
                 </div>
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row" style="justify-content: center;">
                         <div class="col-md-4">
                             <a href="{{ url_for('admin.view_spots', lot_id=lot.id) }}" class="btn btn-info w-100">
                                 <i class="fas fa-eye me-2"></i>View All Spots
                             </a>
-                        </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-warning w-100" disabled title="JS removed; toggle disabled">
-                                <i class="fas fa-toggle-{{ 'on' if lot.is_active else 'off' }} me-2"></i>
-                                {{ 'Deactivate' if lot.is_active else 'Activate' }} Lot
-                            </button>
                         </div>
                         <div class="col-md-4">
                             <a href="{{ url_for('admin.delete_parking_lot', lot_id=lot.id) }}"

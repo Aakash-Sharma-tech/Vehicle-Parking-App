@@ -87,7 +87,7 @@ def add_parking_lot():
 @admin_bp.route('/parking-lots/<int:lot_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def edit_parking_lot(lot_id):
-    """Edit existing parking lot"""
+    """Edit existing parking lot and adjust spots if needed"""
     lot = ParkingLotModel.query.get_or_404(lot_id)
     
     if request.method == 'POST':
@@ -95,31 +95,80 @@ def edit_parking_lot(lot_id):
         lot.address = request.form.get('address')
         lot.pincode = request.form.get('pincode')
         lot.price_per_hour = float(request.form.get('price_per_hour'))
-        
+
+        # ✅ New: Allow editing total spots
+        new_total_spots = int(request.form.get('max_spots'))
+        old_total_spots = lot.max_spots
+
+        if new_total_spots != old_total_spots:
+            lot.max_spots = new_total_spots
+            adjust_parking_spots(lot, new_total_spots, old_total_spots)
+
         try:
             db.session.commit()
             flash('Parking lot updated successfully!', 'success')
             return redirect(url_for('admin.parking_lots'))
         except Exception as e:
             db.session.rollback()
-            flash('Error updating parking lot', 'error')
+            flash(f'Error updating parking lot: {str(e)}', 'error')
     
     return render_template('admin/edit_parking_lot.html', lot=lot)
+
+def adjust_parking_spots(lot, new_total, old_total):
+    """Add or remove parking spots based on updated total"""
+    if new_total > old_total:
+        # Add new spots and make them available
+        for spot_num in range(old_total + 1, new_total + 1):
+            new_spot = ParkingSpotModel(
+                spot_number=f"A{spot_num:03d}",
+                parking_lot_id=lot.id,
+                # is_available=True  # ✅ ensure availability
+            )
+            db.session.add(new_spot)
+
+    elif new_total < old_total:
+        # Remove excess spots (only if not occupied)
+        spots_to_remove = ParkingSpotModel.query.filter(
+            ParkingSpotModel.parking_lot_id == lot.id,
+            ParkingSpotModel.spot_number > f"A{new_total:03d}"
+        ).all()
+
+        for spot in spots_to_remove:
+            active_reservation = ReservationModel.query.filter_by(
+                parking_spot_id=spot.id,
+                is_active=True
+            ).first()
+            if not active_reservation:
+                db.session.delete(spot)
+            else:
+                flash(f"Spot {spot.spot_number} is occupied and cannot be deleted.", "warning")
+
+    # ✅ Ensure all existing free spots are marked available
+    for spot in lot.spots:
+        if not spot.get_current_reservation():  # no active booking
+            spot.is_available = True
+
+
 
 @admin_bp.route('/parking-lots/<int:lot_id>/delete')
 @admin_required
 def delete_parking_lot(lot_id):
     """Delete parking lot"""
     lot = ParkingLotModel.query.get_or_404(lot_id)
-    
     try:
+        # Delete all reservations associated with spots in this lot
+        spots = ParkingSpotModel.query.filter_by(parking_lot_id=lot_id).all()
+        for spot in spots:
+            ReservationModel.query.filter_by(parking_spot_id=spot.id).delete()
+        # Delete all spots in the lot
+        ParkingSpotModel.query.filter_by(parking_lot_id=lot_id).delete()
+        # Delete the lot itself
         db.session.delete(lot)
         db.session.commit()
         flash('Parking lot deleted successfully!', 'success')
     except Exception as e:
         db.session.rollback()
-        flash('Error deleting parking lot', 'error')
-    
+        flash(f'Error deleting parking lot: {e}', 'error')
     return redirect(url_for('admin.parking_lots'))
 
 @admin_bp.route('/parking-lots/<int:lot_id>/spots')
